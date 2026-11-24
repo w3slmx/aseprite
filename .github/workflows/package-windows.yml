@@ -92,9 +92,10 @@ jobs:
           if (!(Test-Path 'build/bin/data')) { throw 'Missing data directory' }
           $exe = (Resolve-Path 'build/bin/aseprite.exe').Path
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-          & $exe --version
-          if ($LASTEXITCODE -ne 0) {
-            throw "Packaged executable failed with exit code $LASTEXITCODE"
+          $process = Start-Process -FilePath $exe -ArgumentList '--version' -NoNewWindow -Wait -PassThru
+          Write-Host "Packaged executable exit code: $($process.ExitCode)"
+          if ($process.ExitCode -ne 0) {
+            throw "Packaged executable failed with exit code $($process.ExitCode)"
           }
 
       - name: Upload package
